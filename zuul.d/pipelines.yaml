@@ -25,3 +25,32 @@
     failure:
       github:
         check: 'failure'
+
+- pipeline:
+    name: gate
+    description: |
+      Changes that have been approved are enqueued in order in this
+      pipeline, and if they pass tests, will be merged.
+    manager: dependent
+    post-review: True
+    require:
+      gerrit:
+        open: True
+        current-patchset: True
+        approval:
+          - Workflow: 1
+    trigger:
+      gerrit:
+        - event: comment-added
+          approval:
+            - Workflow: 1
+    start:
+      gerrit:
+        Verified: 0
+    success:
+      gerrit:
+        Verified: 2
+        submit: true
+    failure:
+      gerrit:
+        Verified: -2
