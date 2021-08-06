@@ -73,6 +73,7 @@
           action: labeled
           label:
             - merge
+            - gate
     start:
       githubzuulapp:
         check: 'in_progress'
