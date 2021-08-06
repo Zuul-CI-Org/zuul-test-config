@@ -1,0 +1,32 @@
+---
+- project:
+    name: ^Zuul-CI-Org.*$
+    default-branch: main
+    check:
+      jobs: []
+    gate:
+      jobs: []
+    post:
+      jobs: []
+    tag:
+      jobs: []
+
+- project:
+    name: zuul/zuul-jobs
+    default-branch: master
+
+- project:
+    name: Zuul-CI-Org/zuul-test-config
+    default-branch: main
+    check:
+      jobs:
+        - noop
+    gate:
+      jobs:
+        - noop
+    post:
+      jobs:
+        - noop
+    tag:
+      jobs:
+        - noop
