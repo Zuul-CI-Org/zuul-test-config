@@ -1,11 +1,12 @@
+---
 - pipeline:
-    name: check
+    name: gh_check
     description: |
-      Newly opened pull requests enter this pipeline to receive an
-      initial verification
+      Newly uploaded patchsets enter this pipeline to receive an
+      initial check status.
     manager: independent
     trigger:
-      github:
+      githubzuulapp:
         - event: pull_request
           action:
             - opened
@@ -15,40 +16,44 @@
           action: comment
           comment: (?i)^\s*recheck\s*$
         - event: check_run
+          action: rerequested
+          check: .*/check:.*
     start:
-      github:
+      githubzuulapp:
         check: 'in_progress'
         comment: false
     success:
-      github:
+      githubzuulapp:
         check: 'success'
+        comment: false
     failure:
-      github:
+      githubzuulapp:
         check: 'failure'
+        comment: false
+    dequeue:
+      githubzuulapp:
+        check: cancelled
+        comment: false
 
 - pipeline:
-    name: gate
-    description: >
+    name: gh_gate
+    description: |
       Changes that have been approved by core developers are enqueued
       in order in this pipeline, and if they pass tests, will be
       merged.
     manager: dependent
     precedence: high
-    supercedes:
-      - check
+    supercedes: gh_check
     require:
-      github:
+      githubzuulapp:
+        review:
+          - permission: write
+            type: approved
+        label: gate
         open: true
         current-patchset: true
-        review:
-          - type: approved
-        label: merge
-    reject:
-      github:
-        review:
-          - type: changes_requested
     trigger:
-      github:
+      githubzuulapp:
         - event: pull_request_review
           action: submitted
           state: approved
@@ -69,20 +74,44 @@
           label:
             - gate
     start:
-      github:
-        check: in_progress
+      githubzuulapp:
+        check: 'in_progress'
         comment: false
     success:
-      github:
-        check: success
+      githubzuulapp:
+        check: 'success'
         comment: false
         merge: true
     failure:
-      github:
-        check: failure
+      githubzuulapp:
+        check: 'failure'
+        comment: false
     dequeue:
-      github:
+      githubzuulapp:
         check: cancelled
         comment: false
     window-floor: 20
     window-increase-factor: 2
+
+- pipeline:
+    name: gh_post
+    post-review: true
+    description:
+      This pipeline runs jobs that operate after each change is merged.
+    manager: independent
+    precedence: low
+    trigger:
+      githubzuulapp:
+        - event: push
+          ref: ^refs/heads/.*$
+
+- pipeline:
+    name: gh_tag
+    description: This pipeline runs jobs in response to any tag event.
+    manager: independent
+    precedence: high
+    post-review: true
+    trigger:
+      githubzuulapp:
+        - event: push
+          ref: ^refs/tags/.*$
