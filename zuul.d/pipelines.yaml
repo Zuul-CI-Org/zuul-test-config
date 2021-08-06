@@ -43,7 +43,7 @@
       merged.
     manager: dependent
     precedence: high
-    supercedes: gh_check
+    supercedes: check
     require:
       githubzuulapp:
         review:
