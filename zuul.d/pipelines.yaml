@@ -40,9 +40,7 @@
     manager: dependent
     success-message: gate jobs succeeded
     failure-message: gate jobs failed
-    start-message: |
-      Starting {pipeline.name} jobs.
-      Status: {status_url}/change/{change.number},{change.patchset}
+    start-message: "starting"
     post-review: true
     precedence: high
     window-floor: 9
