@@ -46,9 +46,6 @@
     supercedes: check
     require:
       githubzuulapp:
-        review:
-          - permission: write
-            type: approved
         label: gate
         open: true
         current-patchset: true
