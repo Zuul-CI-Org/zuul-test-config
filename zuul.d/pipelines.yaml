@@ -46,7 +46,7 @@
     supercedes: check
     require:
       githubzuulapp:
-        label: gate
+        label: merge
         open: true
         current-patchset: true
     trigger:
