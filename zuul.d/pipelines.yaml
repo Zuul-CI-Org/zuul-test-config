@@ -100,8 +100,8 @@
     precedence: low
     trigger:
       githubzuulapp:
-        - event: push
-          ref: ^refs/heads/.*$
+        - event: pull_request
+          action: closed
 
 - pipeline:
     name: tag
